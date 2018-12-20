@@ -1,0 +1,85 @@
+Video Tutorial(Telusko)
+		https://www.youtube.com/watch?v=otinfgwkMbY&list=PLsyeobzWxl7qBZtsEvp_n2A7sJs2MpF3r&index=27
+		
+
+1. Create a Maven Project (quickstart)
+2. Create a DB
+	- in MySql workbench, create a database called "assegd"
+			create database assegd;
+	- Create a table "alien(aid,aname,tech)" and enter atleast four data
+			use assegd;
+			create table alien(aid int, aname varchar(255), tech varchar(255));
+			select * from alien;
+	- Enter 5 data 
+			use assegd;
+			insert into alien values(1,'assegd','java');(enter the 5 data one by one)
+			select * from alien;
+3. The plan is to enter data using an application not using the MySql
+
+4. Create a class "Alien" with member variables aid,aname,tech 
+		- getter n setter 
+		- toString method:- if you want to print the object, you can print the values of it instead of the hash code
+
+5. Trying to Fetch data from the DB using the App, we need to add first hibernate and MySql-connector dependencies
+		- Goto mvnrepository.com
+				- search for Hibernate --> core Hibernate O/RM functionality --> pick the latest version --> paste in Pom.xml
+					- all the dependencies will be downloaded in 'Maven Dependencies'
+				- Search for MySql Connector --> MySQL Connector/J --> choose stable version --> paste in Pom.xml 
+6. Now Hibernate and MySql are inside our project, we can start fetching the data from DB
+	- In App.class:- Create EntityManagerFactory and EntityManager objects
+						EntityManagerFactory emf = Persistence.createEntityManagerFactory("");
+       					EntityManager em = emf.createEntityManager();
+				  :- Create Alien object and fetch data via the EntityManager object
+				  		   Alien a = em.find(Alien.class, 4);
+				  
+7. Before excuting the App, we need to specify which DB we are using and all the resources should be mentioned somewhere else
+	- in src/main folder, create a new folder "resources/META-INF" 
+	- create a XML file "persistence.xml" to specify all the resources under the "persistence" XML tag
+		<persistence version="2.1"
+			xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="{http://xmlns.jcp.org/xml/ns/persistence} {http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd}">
+				<persistence-unit name="pu">
+					<properties>
+						<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"></property>
+						<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/assegd"></property>
+						<property name="javax.persistence.jdbc.user" value="root"></property>
+						<property name="javax.persistence.jdbc.password" value="root"></property>
+					</properties>
+				</persistence-unit>
+		</persistence>
+
+8. Now when u run the app from App.class, if you get the "Unable to locate persister: com.assegd.JpaDemo.Alien" Exception then
+	- Add Annotation @Entity to Alien.class and @Id to the primary key so that jpa can access it.
+	
+9. When running try to print the object values on console to see the result
+		in App.class: -   System.out.println(a);
+		
+10. If you see the output of the object on the console side, then the app is running properly
+
+----------------------------------- //--------------------------------------------//---------------------------
+Saving the data
+
+1. in App.class create an object and assign values
+		Alien a = new Alien();
+		a.setAid(6);
+		a.setAname("Maria");
+		a.setTech("Hardware");
+2. When saving data, we should put it between opening and closing transactions
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("pu");
+		EntityManager em = emf.createEntityManager();
+		
+		em.getTransaction().begin();
+		em.persist(a);
+		em.getTransaction().commit();
+		
+3. Now the new data will be added to the DB
+	- you can go and check in the MySql database under Alien Table
+			select * from alien;
+	- you will see the new added object
+ -------------------------------//--------------------------------------------//------------------------
+ 
+ - The beauty of JPA if you want to change your implementation from Hibernate to TopLink	
+ 	- you just have to go to the pom.xml file and change the dependency from hibernate to Toplink one
+					
+				
